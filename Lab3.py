@@ -31,7 +31,6 @@ def shrink_mat(mat):
         coordinate.pop()
     return
 
-
 # Function for rotating object around y-axis.
 def rota_y(degree,obj):
     rotated_obj = []
@@ -50,17 +49,6 @@ def writeMatrixToFile(matrix):
         target.write(matrix)
     target.close()
     return
-
-# TESTING OF EXPAND AND SHRINK. UNCOMMENT TO TEST.
-'''a = [[1,1,1],[1,1,2],[1,1,3],[1,1,4],[1,1,5]]
-print(a)
-
-expand_mat(a)
-print(a)
-
-shrink_mat(a)
-print(a)'''
-
 
 # The scale, translate, and rotation functions all take only 3x3 matrices.
 def obj_scale(obj,x_scale,y_scale,z_scale):
@@ -97,94 +85,87 @@ def obj_trans(obj, trans_x, trans_y, trans_z):
     shrink_mat(obj)
     shrink_mat(trans_obj)
     return trans_obj
-    
-
-# TESTING OF SCALING, TRANSLATING, AND ROTATING. UNCOMMENT TO TEST.
-'''a = [[0,0,1],[1,1,2],[1,1,3],[1,1,4],[1,1,5]]
-print('a= '+str(a))
-
-b = obj_scale(a,2,2,2)
-print('b= '+str(b))
-print('a= '+str(a))
-
-c = obj_trans(a,2,-2,10)
-print('c= '+str(c))
-print('a= '+str(a))
-
-d = rota_y(90,a)
-print(d)'''
-
-# Initialization of array of .objs we will read and the object counter.
-objs = [[],[],[]]
-obj_count = 0
-
-# Opening the given .obj
-with open('Mixed.obj') as f:
-        bigdata = f.readlines()
-
-# Reading line by line from bigdata.
-for line in bigdata:
-    
-        splitline = line.split()
-        
-        if not splitline:
-                continue           
-        
-        # If the first continuous set of characters on the line is 'v',
-        # we store the coordinates in our objs array.
-        if splitline[0] =='v':
-            x = float(splitline[1])
-            y = float(splitline[2])
-            z = float(splitline[3])
-            objs[obj_count].append([x,y,z])
-            
-        # The 'g' line starter uniquely identifies the end of an object
-        # in the given .obj file so that is what we check for.
-        elif splitline[0] =='g':
-            obj_count += 1
-
 
 # Actual transformations as specified by the assignment.
 #Transform 1
-obj4 = obj_scale(objs[0],4,4,4)
-target = open('O4.obj','w')
-for i in obj4:
-    target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
-target.close()
+def trans1(objs,identity):
+    obj4 = obj_scale(objs[0], 4, 4, 4)
+    target = open('O4.obj', 'w')
+    for i in obj4:
+        target.write('v %s %s %s\n' % (i[0], i[1], i[2]))
+    target.close()
 
-#Transformation 1 Matrix Pull
-identity = [[1,0,0],[0,1,0],[0,0,1]]
-trans1_mat = obj_scale(identity,4,4,4)
-#print(trans1_mat)
+    # Transformation 1 Matrix Pull
+    trans1_mat = obj_scale(identity, 4, 4, 4)
+    return trans1_mat
 
 #Transform 2
-obj5_trans = obj_trans(objs[1],0,100,0)
-obj5 = obj_scale(obj5_trans, 5,5,5)
-target = open('O5.obj','w')
-for i in obj5:
-    target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
-target.close()
+def trans2(objs,identity):
+    obj5_trans = obj_trans(objs[1],0,100,0)
+    obj5 = obj_scale(obj5_trans, 5,5,5)
+    target = open('O5.obj','w')
+    for i in obj5:
+        target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
+    target.close()
 
-#Transformation 2 Matrix Pull
-trans2_mat=obj_trans(identity,0,100,0)
-trans2_mat=obj_scale(trans2_mat,5,5,5)
-#print (trans2_mat)
+    #Transformation 2 Matrix Pull
+    trans2_mat=obj_trans(identity,0,100,0)
+    trans2_mat=obj_scale(trans2_mat,5,5,5)
+    return trans2_mat
 
 # Transform 3
-obj6_rot = rota_y(90,objs[2])
-obj6_trans = obj_trans(obj6_rot,0,0,10)
-obj6_scale = obj_scale(obj6_trans,3,3,3)
-target = open('O6.obj','w')
-for i in obj6_scale:
-    target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
-target.close()
+def trans3(objs,identity):
+    obj6_rot = rota_y(90,objs[2])
+    obj6_trans = obj_trans(obj6_rot,0,0,10)
+    obj6_scale = obj_scale(obj6_trans,3,3,3)
+    target = open('O6.obj','w')
+    for i in obj6_scale:
+        target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
+    target.close()
 
-#Transformation 3 Matrix Pull
-trans3_mat=rota_y(90, identity)
-trans3_mat=obj_trans(trans3_mat,0,0,10)
-trans3_mat=obj_scale(trans3_mat,3,3,3)
-writeMatrixToFile(trans1_mat)
-writeMatrixToFile(trans2_mat)
-writeMatrixToFile(trans3_mat)
+    #Transformation 3 Matrix Pull
+    trans3_mat=rota_y(90, identity)
+    trans3_mat=obj_trans(trans3_mat,0,0,10)
+    trans3_mat=obj_scale(trans3_mat,3,3,3)
+    return trans3_mat
+
+def main():
+    # Initialization of array of .objs we will read and the object counter.
+    objs = [[], [], []]
+    obj_count = 0
+
+    # Opening the given .obj
+    with open('Mixed.obj') as f:
+        bigdata = f.readlines()
+
+    # Reading line by line from bigdata.
+    for line in bigdata:
+        splitline = line.split()
+
+        if not splitline:
+            continue
+
+            # If the first continuous set of characters on the line is 'v',
+        # we store the coordinates in our objs array.
+        if splitline[0] == 'v':
+            x = float(splitline[1])
+            y = float(splitline[2])
+            z = float(splitline[3])
+            objs[obj_count].append([x, y, z])
+
+        # The 'g' line starter uniquely identifies the end of an object
+        # in the given .obj file so that is what we check for.
+        elif splitline[0] == 'g':
+            obj_count += 1
+
+    identity = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    trans1_mat=trans1(objs,identity)
+    trans2_mat=trans2(objs,identity)
+    trans3_mat=trans3(objs,identity)
+    writeMatrixToFile(trans1_mat)
+    writeMatrixToFile(trans2_mat)
+    writeMatrixToFile(trans3_mat)
+
+main()
 
 
