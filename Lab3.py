@@ -10,6 +10,7 @@ Shuyun Xiong
 Michael Xi
 """
 import numpy as np
+import math
 
 # Matrix transformation functions.
 
@@ -28,8 +29,27 @@ def shrink_mat(mat):
     # a 3D matrix converted from a 4D matrix back to its 3D status.
     for coordinate in mat:
         coordinate.pop()
-    return 
+    return
 
+
+# Function for rotating object around y-axis.
+def rota_y(degree,obj):
+    rotated_obj = []
+    degree = math.radians(degree)
+    sr=np.sin(degree)
+    cr=np.cos(degree)
+    rota_Mat=[[cr,0,sr],[0,1,0],[-sr,0,cr]]
+    for vertex in obj:
+        rotated_obj.append(np.dot(rota_Mat, vertex).tolist())
+
+    return rotated_obj
+
+def writeMatrixToFile(matrix):
+    matrix=str(matrix)
+    with open('Transformation matrixes.txt','a') as target:
+        target.write(matrix)
+    target.close()
+    return
 
 # TESTING OF EXPAND AND SHRINK. UNCOMMENT TO TEST.
 '''a = [[1,1,1],[1,1,2],[1,1,3],[1,1,4],[1,1,5]]
@@ -80,7 +100,7 @@ def obj_trans(obj, trans_x, trans_y, trans_z):
     
 
 # TESTING OF SCALING, TRANSLATING, AND ROTATING. UNCOMMENT TO TEST.
-'''a = [[1,1,1],[1,1,2],[1,1,3],[1,1,4],[1,1,5]]
+'''a = [[0,0,1],[1,1,2],[1,1,3],[1,1,4],[1,1,5]]
 print('a= '+str(a))
 
 b = obj_scale(a,2,2,2)
@@ -89,8 +109,10 @@ print('a= '+str(a))
 
 c = obj_trans(a,2,-2,10)
 print('c= '+str(c))
-print('a= '+str(a))'''
+print('a= '+str(a))
 
+d = rota_y(90,a)
+print(d)'''
 
 # Initialization of array of .objs we will read and the object counter.
 objs = [[],[],[]]
@@ -122,40 +144,47 @@ for line in bigdata:
             obj_count += 1
 
 
-                
-#obj4 = obj_scale(objs[0],4)
-
-# Writing the objects to their individual files. Not needed for the current
-# version of the assignment.
-'''
-target = open('O1.obj','w')
-for i in objs[0]:
-    target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
-target.close()
-
-target = open('O2.obj','w')
-for i in objs[1]:
-    target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
-target.close()
-
-target = open('O3.obj','w')
-for i in objs[2]:
-    target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
-target.close()
-'''
-
 # Actual transformations as specified by the assignment.
-'''#Transform 1
-obj4 = obj_scale(objs[0],4)
+#Transform 1
+obj4 = obj_scale(objs[0],4,4,4)
 target = open('O4.obj','w')
 for i in obj4:
     target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
 target.close()
 
+#Transformation 1 Matrix Pull
+identity = [[1,0,0],[0,1,0],[0,0,1]]
+trans1_mat = obj_scale(identity,4,4,4)
+#print(trans1_mat)
+
 #Transform 2
 obj5_trans = obj_trans(objs[1],0,100,0)
-obj5 = obj_scale(obj5_trans, 5)
-target = open('O4.obj','w')
+obj5 = obj_scale(obj5_trans, 5,5,5)
+target = open('O5.obj','w')
 for i in obj5:
     target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
-target.close()'''
+target.close()
+
+#Transformation 2 Matrix Pull
+trans2_mat=obj_trans(identity,0,100,0)
+trans2_mat=obj_scale(trans2_mat,5,5,5)
+#print (trans2_mat)
+
+# Transform 3
+obj6_rot = rota_y(90,objs[2])
+obj6_trans = obj_trans(obj6_rot,0,0,10)
+obj6_scale = obj_scale(obj6_trans,3,3,3)
+target = open('O6.obj','w')
+for i in obj6_scale:
+    target.write('v %s %s %s\n'% (i[0],i[1],i[2]))
+target.close()
+
+#Transformation 3 Matrix Pull
+trans3_mat=rota_y(90, identity)
+trans3_mat=obj_trans(trans3_mat,0,0,10)
+trans3_mat=obj_scale(trans3_mat,3,3,3)
+writeMatrixToFile(trans1_mat)
+writeMatrixToFile(trans2_mat)
+writeMatrixToFile(trans3_mat)
+
+
